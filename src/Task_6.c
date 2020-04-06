@@ -1,0 +1,45 @@
+#include <stdio.h>
+#include <openssl/bn.h>
+
+void printBN(char *msg, BIGNUM * a)
+{
+	/* Use BN_bn2hex(a) for hex string
+	* Use BN_bn2dec(a) for decimal string */
+	char * number_str = BN_bn2hex(a);
+	printf("%s %s\n", msg, number_str);
+	OPENSSL_free(number_str);
+}
+
+int main() 
+{
+	// Variables declaration
+	BN_CTX *ctx = BN_CTX_new();
+	
+	BIGNUM *e = BN_new();
+	BIGNUM *n = BN_new();
+	BIGNUM *M = BN_new();
+	BIGNUM *H = BN_new();
+	BIGNUM *S = BN_new();
+
+	// Initialize <e>, <n>, <M>, <S> values
+	BN_hex2bn(&e, "010001");
+	BN_hex2bn(&M, "cbd2ae848257a02c4860c2245c5e6b76f6d796674a31cb0c9a0cea8787d1d6de");
+	BN_hex2bn(&n, "B6E02FC22406C86D045FD7EF0A6406B27D22266516AE42409BCEDC9F9F76073EC330558719B94F940E5A941F5556B4C2022AAFD098EE0B40D7C4D03B72C8149EEF90B111A9AED2C8B8433AD90B0BD5D595F540AFC81DED4D9C5F57B786506899F58ADAD2C7051FA897C9DCA4B182842DC6ADA59CC71982A6850F5E44582A378FFD35F10B0827325AF5BB8B9EA4BD51D027E2DD3B4233A30528C4BB28CC9AAC2B230D78C67BE65E71B74A3E08FB81B71616A19D23124DE5D79208AC75A49CBACD17B21E4435657F532539D11C0A9A631B199274680A37C2C25248CB395AA2B6E15DC1DDA020B821A293266F144A2141C7ED6D9BF2482FF303F5A26892532F5EE3");
+
+	BN_hex2bn(&S, "8269386da0a5909fb8a7f59f436ca062659fe0dc50cb1b69ed93031d88a17b74e2ca6900429fdf3db89bad3f49ed161c6b4c449f6aa20211eac015c96c9eab215aaa833b5bc4884b9179984807790f25a1db177c529abffb00861ab85032b63e0add9b5b315ac4f4ba2102db438bacc6dbdb0497e19018c7ee9d63eb72682437643373ac812d1ee63cd6110eb3b12a7842a6ccf0ea20fca47e8f88b5c4440f159cfb40337ee396b30f56b38a72ecc3762e790267066acd78d6832f25c439fa16d2bcc57473e47e8640f90b542fb664b5eb9fecd0294915e1d09106e21fe1c5fc39153f274217b85f987ddb27297665be1431af6e540f9188f09bdaa54cda6e21");
+
+	// Calculate <H> = S^e mod n
+	BN_mod_exp(H, S, e, n, ctx);
+
+	// Truncate hash value to 256 bits
+	BN_mask_bits(H, 256);
+
+	// Print final information
+	printBN("H (Hash) =", H);
+	printBN("Signature Body (Hash) =", M);
+
+	if(BN_cmp(H, M) == 0) 
+		printf("Signature Valid\n");
+	else 
+		printf("Signature Invalid\n");
+};
