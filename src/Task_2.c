@@ -37,7 +37,7 @@ int main()
 	BN_mod_exp(M_Decrypt, C, d, n, ctx);
 
 	// Print final information
-	printBN("Encryption Key (C) =", C);
+	printBN("Cyphertext (C) =", C);
 	
 	if(BN_cmp(M_Decrypt, M) == 0) 
 		printf("Encryption Success\n");
