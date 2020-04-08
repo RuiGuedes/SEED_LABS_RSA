@@ -31,5 +31,5 @@ int main()
 	BN_mod_exp(M, C, d, n, ctx);
 
 	// Print final information
-	printBN("Decryption Key (M) =", M); // python -c 'print("M".decode("hex"))' --> M = Password is dees
+	printBN("Message (M) =", M); // python -c 'print("M".decode("hex"))' --> M = Password is dees
 };
